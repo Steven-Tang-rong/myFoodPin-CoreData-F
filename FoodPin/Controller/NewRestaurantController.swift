@@ -8,6 +8,7 @@
 
 import UIKit
 import CoreData
+import CloudKit
 
 class NewRestaurantController: UITableViewController, UITextFieldDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
 
@@ -73,7 +74,7 @@ class NewRestaurantController: UITableViewController, UITextFieldDelegate, UIIma
         }
     }
     
-    //呈現照片庫
+    //MARK: - 呈現照片庫
     override func  tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if indexPath.row == 0{
             
@@ -200,8 +201,48 @@ func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMe
             print("Saving data to contect..")
             appDelegate.saveContext()
         }
-            
+               saveRecordToCloud(NewRestaurant: NewRestaurant)
                dismiss(animated: true, completion: nil)
            }
+    
+    //MARK: - 上傳資料至iCloud
        
+    func saveRecordToCloud(NewRestaurant: RestaurantMO!) -> Void {
+        
+        //準備要儲存的資料
+        let record = CKRecord(recordType: "Restaurant")
+        record.setValue(NewRestaurant.name, forKey: "name")
+        record.setValue(NewRestaurant.type, forKey: "type")
+        record.setValue(NewRestaurant.location, forKey: "location")
+        record.setValue(NewRestaurant.phone, forKey: "phone")
+        record.setValue(NewRestaurant.summary, forKey: "description")
+        
+        let imageData = NewRestaurant.image! as Data
+        
+        //調整圖片大小
+        let originalImage = UIImage(data: imageData)!
+        let scalingFactor = (originalImage.size.width > 1024) ? 1024 / originalImage.size.width : 1.0
+        let scaledImage = UIImage(data: imageData, scale: scalingFactor)!
+        
+        //將圖片寫進本地端檔案，作為暫時使用
+        let imageFilePath = NSTemporaryDirectory() + NewRestaurant.name!
+        let imageFileURL = URL(fileURLWithPath: imageFilePath)
+        try? scaledImage.jpegData(compressionQuality: 0.8)?.write(to: imageFileURL)
+        
+        //建立要上傳的圖片資料
+        let imageAsset = CKAsset(fileURL: imageFileURL)
+        record.setValue(imageAsset, forKey: "image")
+        
+        //讀取iCloud公共資料庫
+        let publicDatabase = CKContainer(identifier: "iCloud.com.Steven-QI.FoodPin").publicCloudDatabase
+        
+        
+        //儲存資料至iCloud
+        publicDatabase.save(record, completionHandler: { (record, error) -> Void in
+            //移除暫存檔
+            try? FileManager.default.removeItem(at: imageFileURL)
+            
+        })
+    }
+    
 }

@@ -19,7 +19,7 @@ class detailHeaderView: UIView {
     
     @IBOutlet var typeLabel: UILabel!{
         didSet{
-            typeLabel.layer.cornerRadius = 5.0
+            typeLabel.layer.cornerRadius = 10.0
             typeLabel.layer.masksToBounds = true
             //需啟用masksToBounds屬性才有圓角
         }

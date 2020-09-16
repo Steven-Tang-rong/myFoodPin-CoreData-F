@@ -1,0 +1,12 @@
+
+/* Class = "UITabBarItem"; title = "About"; ObjectID = "RLq-C5-qXv"; */
+"RLq-C5-qXv.title" = "About";
+
+/* Class = "UINavigationItem"; title = "About"; ObjectID = "ZTN-7D-1AK"; */
+"ZTN-7D-1AK.title" = "About";
+
+/* Class = "UIBarButtonItem"; title = "  "; ObjectID = "b76-kv-Rc7"; */
+"b76-kv-Rc7.title" = "  ";
+
+/* Class = "UILabel"; text = "Title"; ObjectID = "c4E-BR-B3T"; */
+"c4E-BR-B3T.text" = "Title";

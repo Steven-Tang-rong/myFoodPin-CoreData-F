@@ -23,11 +23,27 @@ class RestaurantTableTableViewController: UITableViewController, NSFetchedResult
         searchController.searchBar.searchTextField.attributedPlaceholder = NSAttributedString(string: "我要找餐廳！", attributes: [NSAttributedString.Key.foregroundColor: UIColor.white.withAlphaComponent(1.0) ])
     }
  
+    override func viewDidDisappear(_ animated: Bool) {
+        /*searchController.searchBar.searchTextField.attributedPlaceholder = NSAttributedString(string: "我要找餐廳！", attributes: [NSAttributedString.Key.foregroundColor: UIColor.white.withAlphaComponent(1.0) ])*/
+        
+            //還是會有些問題
+    }
+    
     // MARK: - View controller life cycle
     
     override func viewDidLoad() {
         super.viewDidLoad()
   
+    // 顯示導覽畫面
+        if UserDefaults.standard.bool(forKey: "hasViewe０dWalkthrough") {
+             return
+         }
+         
+         let storyboard = UIStoryboard(name: "Onboarding", bundle: nil)
+         if let startReadingViewController = storyboard.instantiateViewController(withIdentifier: "startReadingViewController") as? startReadingViewController {
+             
+             present(startReadingViewController, animated: true, completion: nil)
+         }
        
         
         // Prepare the empty view
@@ -140,7 +156,7 @@ class RestaurantTableTableViewController: UITableViewController, NSFetchedResult
         super.viewWillAppear(animated)
         
         navigationController?.hidesBarsOnSwipe = true
-       
+
     }
 
     
@@ -194,7 +210,7 @@ class RestaurantTableTableViewController: UITableViewController, NSFetchedResult
      //MARK: - 往左滑動打卡動作
     override func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
         
-        let deleteAction = UIContextualAction(style: .destructive, title: "刪除") { (action, sourceView, completionHandler) in
+        let deleteAction = UIContextualAction(style: .destructive, title: NSLocalizedString("Delete", comment: "Delete")) { (action, sourceView, completionHandler) in
             
         if let appDelegate = (UIApplication.shared.delegate as? AppDelegate) {
             let context = appDelegate.persistentContainer.viewContext
@@ -208,10 +224,10 @@ class RestaurantTableTableViewController: UITableViewController, NSFetchedResult
             completionHandler(true)
         }
         
-        let shareAction = UIContextualAction(style: .normal, title: "分享"){
+        let shareAction = UIContextualAction(style: .normal, title: NSLocalizedString("Share", comment: "Share")){
             (action, sourceView, completionHandler) in
             
-            let defaultText = "Just checking in at " + self.restaurants[indexPath.row].name!
+            let defaultText = NSLocalizedString ("Just checking in at ", comment: "Just checking in at ") + self.restaurants[indexPath.row].name!
             let activityController: UIActivityViewController
             
             if let restaurantImage = self.restaurants[indexPath.row].image,
@@ -235,7 +251,7 @@ class RestaurantTableTableViewController: UITableViewController, NSFetchedResult
         }
        
         // Customize the color
-        deleteAction.backgroundColor = UIColor(red: 250.0/255.0, green: 108.0/255.0, blue: 120.0/255.0, alpha: 1.0)
+        deleteAction.backgroundColor = #colorLiteral(red: 0.9568627477, green: 0.6588235497, blue: 0.5450980663, alpha: 1)
         deleteAction.image = UIImage(systemName: "trash")
 
         shareAction.backgroundColor = UIColor(red: 240.0/255.0, green: 175.0/255.0, blue: 135.0/255.0, alpha: 1.0)
@@ -250,7 +266,7 @@ class RestaurantTableTableViewController: UITableViewController, NSFetchedResult
     //MARK: - 往右滑動打卡動作
     override func tableView(_ tableView: UITableView, leadingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration?{
         
-        let rightCheckIn = UIContextualAction(style: .normal, title: "登記") {(action, sourceView, completionHandler) in
+        let rightCheckIn = UIContextualAction(style: .normal, title: NSLocalizedString("登記", comment: "Check-in")) {(action, sourceView, completionHandler) in
             
             let cell = tableView.cellForRow(at: indexPath) as! RestaurantTableViewCell
             self.restaurants[indexPath.row].isVisited = self.restaurants[indexPath.row].isVisited ? false : true
@@ -325,20 +341,5 @@ class RestaurantTableTableViewController: UITableViewController, NSFetchedResult
             tableView.reloadData()
         }
     }
-    
-    
-    //MARK: - 顯示導覽畫面
-    
-    override func viewDidAppear(_ animated: Bool) {
-      
-        if UserDefaults.standard.bool(forKey: "hasViewedWalkthrough") {
-            return
-        }
-        
-        let storyboard = UIStoryboard(name: "Onboarding", bundle: nil)
-        if let startReadingViewController = storyboard.instantiateViewController(withIdentifier: "startReadingViewController") as? startReadingViewController {
-            
-            present(startReadingViewController, animated: true, completion: nil)
-        }
-    }
+
 }

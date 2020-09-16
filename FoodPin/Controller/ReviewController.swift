@@ -57,7 +57,7 @@ class ReviewController: UIViewController {
             }, completion: nil)
         }
         
-        UIView.animate(withDuration: 3.0, delay: 0.24, options: [], animations: {
+        UIView.animate(withDuration: 1.0, delay: 0.24, options: [], animations: {
             self.xxxButton.alpha = 1.0
             self.xxxButton.transform = .identity
         }, completion: nil)
